@@ -25,17 +25,19 @@ def calculate_total_duration(video_links):
 
 def main():
     video_links = []
-    while True:
-        link = input("YouTube video link (press q for exit aga): ")
-        if link.lower() == 'q':
-            break
-        video_links.append(link)
+    file_name = input("Please enter the name of the txt file containing the video links.: ")
+    try:
+        with open(file_name, 'r') as file:
+            video_links = [line.strip() for line in file.readlines()]
+    except FileNotFoundError:
+        print("file was not found.")
+        return
 
     try:
         total_duration = calculate_total_duration(video_links)
-        print(f"\nToplam video süresi: {total_duration}")
+        print(f"\nTotal video time: {total_duration}")
     except Exception as e:
-        print(f"Hata: {e}")
+        print(f"Error: {e}")
 
 if __name__ == "__main__":
     main()
