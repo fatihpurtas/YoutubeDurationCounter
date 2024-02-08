@@ -1,3 +1,5 @@
+import tkinter as tk
+from tkinter import filedialog
 from pytube import YouTube
 
 def get_video_duration(youtube_url):
@@ -23,21 +25,44 @@ def calculate_total_duration(video_links):
     formatted_total_duration = format_duration(total_seconds)
     return formatted_total_duration
 
-def main():
-    video_links = []
-    file_name = input("Please enter the name of the txt file containing the video links.: ")
+def select_file():
+    file_name = filedialog.askopenfilename(filetypes=[("Text files", "*.txt")])
+    if file_name:
+        file_entry.delete(0, tk.END)
+        file_entry.insert(0, file_name)
+
+def process_file():
+    file_name = file_entry.get()
     try:
         with open(file_name, 'r') as file:
             video_links = [line.strip() for line in file.readlines()]
     except FileNotFoundError:
-        print("file was not found.")
+        result_label.config(text="File not found.")
         return
 
     try:
         total_duration = calculate_total_duration(video_links)
-        print(f"\nTotal video time: {total_duration}")
+        result_label.config(text=f"Total video time: {total_duration}")
     except Exception as e:
-        print(f"Error: {e}")
+        result_label.config(text=f"Error: {e}")
 
-if __name__ == "__main__":
-    main()
+# Create GUI
+root = tk.Tk()
+root.title("YoutubeDurationCounter")
+
+file_label = tk.Label(root, text="Select txt file:")
+file_label.grid(row=0, column=0, padx=5, pady=5, sticky="e")
+
+file_entry = tk.Entry(root, width=50)
+file_entry.grid(row=0, column=1, padx=5, pady=5)
+
+select_button = tk.Button(root, text="Select", command=select_file)
+select_button.grid(row=0, column=2, padx=5, pady=5)
+
+process_button = tk.Button(root, text="Process", command=process_file)
+process_button.grid(row=1, column=1, padx=5, pady=5)
+
+result_label = tk.Label(root, text="")
+result_label.grid(row=2, column=1, padx=5, pady=5)
+
+root.mainloop()
